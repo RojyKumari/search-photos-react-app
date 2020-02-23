@@ -1,26 +1,41 @@
 import React from 'react';
-import logo from './logo.svg';
+import axios from 'axios';
+
+import Search from './components/Search';
+import ImageList from './components/ImageList';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+
+  state = {
+    images : []
+  }
+
+  async getImages(term){
+    var response = await axios.get('https://api.unsplash.com/search/photos',{
+      params: {query:term},
+      headers:{
+        Authorization: 'Client-ID 8b942875bb23cc582467c0e5711cd8769d6c51114d461259f7ac2d072058fb96'
+      }
+    });
+
+    this.setState({
+      images : response.data.results
+    });
+  }
+
+  onEnter = (term) => {
+    this.getImages(term);
+  }
+
+  render (){
+    return (
+      <div className="App">
+          <Search onEnter={this.onEnter}/>
+          <ImageList images={this.state.images}/>
+      </div>
+    );
+  }
 }
 
 export default App;
